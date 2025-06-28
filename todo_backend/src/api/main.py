@@ -39,6 +39,7 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 Base = declarative_base()
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
+
 class TaskModel(Base):
     """SQLAlchemy model for tasks (DB table)."""
     __tablename__ = "tasks"
@@ -296,7 +297,12 @@ def patch_task(
 )
 def toggle_task(
     task_id: int = Path(..., ge=1, description="ID of the task to toggle"),
-    toggle: TaskToggle = Body({}, description="Target state for 'completed', or empty for toggling"),
+    toggle: TaskToggle = Body(
+        {},
+        description=(
+            "Target state for 'completed', or empty for toggling"
+        ),
+    ),
     db: Session = Depends(get_db)
 ):
     task = get_task_or_404(task_id, db)
